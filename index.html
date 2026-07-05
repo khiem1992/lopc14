@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhập Quỹ Lớp</title>
+  <style>
+    /* CSS được làm lại cho chuẩn web di động độc lập */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .form-container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+      box-sizing: border-box;
+      margin: 15px;
+    }
+    h2 {
+      text-align: center;
+      color: #1f2937;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #4b5563;
+    }
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    }
+    .row { display: flex; gap: 15px; }
+    .row .form-group { flex: 1; }
+    .btn-submit {
+      width: 100%;
+      background-color: #f97316;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .btn-submit:hover { background-color: #ea580c; }
+    .loading { opacity: 0.7; cursor: not-allowed; }
+    
+    /* Box thông báo kết quả */
+    #thongBao {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    .success { background-color: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+    .error { background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+    
+    /* CSS thêm cho phần Bảng Tóm Tắt và Nút xem bảng */
+    .summary-box {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+    }
+    .summary-title { text-align: center; font-weight: bold; color: #475569; margin-bottom: 15px; font-size: 15px;}
+    .summary-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+    .summary-item.total { font-weight: bold; font-size: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; color: #0f766e;}
+    .text-thu { color: #16a34a; font-weight: 600;}
+    .text-chi { color: #dc2626; font-weight: 600;}
+    
+    .btn-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background-color: white;
+      color: #3b82f6;
+      padding: 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 15px;
+      box-sizing: border-box;
+      transition: all 0.3s;
+    }
+    .btn-link:hover { background-color: #eff6ff; }
+
+    /* CSS cho màn hình nhập mật khẩu */
+    #khoaBaoMat {
+      background-color: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      margin: 15px;
+      text-align: center;
+    }
+    #khoaBaoMat h3 { color: #1f2937; margin-top: 0; margin-bottom: 20px;}
+    .input-pass {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+    .btn-login {
+      width: 100%;
+      background-color: #0f766e;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .btn-login:hover { background-color: #0d9488; }
+    #loiPass { color: #dc2626; font-size: 14px; margin-top: 10px; display: none; font-weight: bold;}
+    
+    /* Ẩn nội dung chính lúc đầu */
+    #noiDungChinh { display: none; width: 100%; max-width: 450px;}
+
+  </style>
+</head>
+<body>
+
+  <!-- MÀN HÌNH NHẬP MẬT KHẨU -->
+  <div id="khoaBaoMat">
+    <h3>🔒 BẢO MẬT HỆ THỐNG</h3>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập mật khẩu để truy cập Form nhập liệu.</p>
+    <input type="password" id="matKhau" class="input-pass" placeholder="Nhập mật khẩu..." onkeypress="if(event.key === 'Enter') xacNhanMatKhau()">
+    <button class="btn-login" id="btnKiemTra" onclick="xacNhanMatKhau()">TRUY CẬP</button>
+    <div id="loiPass">Sai mật khẩu. Vui lòng thử lại!</div>
+  </div>
+
+  <!-- NỘI DUNG CHÍNH (Bị ẩn) -->
+  <div class="form-container" id="noiDungChinh">
+    <!-- Nút chuyển đến link công khai (Thay link công khai của bạn vào thuộc tính href) -->
+    <a href="https://docs.google.com/spreadsheets/d/1NL46L5UcP8KgaHGqQ3bN-RFxlYrtzPT24-9b-oNBsA0/edit?gid=504682779#gid=504682779" target="_blank" class="btn-link">
+      🔗 Xem Bảng Tính Chi Tiết
+    </a>
+  </div>
+
+  <script>
+    // ======================================================
+    // QUAN TRỌNG: DÁN ĐƯỜNG LINK WEB APP BẠN VỪA COPY VÀO ĐÂY
+    // ======================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsbfSj9cRTMrsxc889k-ycjrBh55wWn3uhef3ZgRCrXATk92yGJaZOt2H3guw6mugE/exec'; 
+    const PHIEN_LUU_TRU = 7 * 24 * 60 * 60 * 1000; // 7 ngày tính bằng mili giây
+    
+    // KIỂM TRA PHIÊN ĐĂNG NHẬP KHI VỪA MỞ TRANG
+    window.onload = function() {
+      const phien = localStorage.getItem('phienDangNhapQuyLop');
+      if (phien) {
+        const thoiGianLuu = parseInt(phien, 10);
+        const thoiGianHienTai = new Date().getTime();
+        
+        // Nếu phiên vẫn còn hạn (nhỏ hơn 7 ngày)
+        if (thoiGianHienTai - thoiGianLuu < PHIEN_LUU_TRU) {
+          moKhoaForm();
+        } else {
+          // Nếu quá hạn thì xóa phiên cũ
+          localStorage.removeItem('phienDangNhapQuyLop');
+        }
+      }
+    };
+
+    // HÀM KIỂM TRA MẬT KHẨU QUA API
+    function xacNhanMatKhau() {
+      const mkNhap = document.getElementById('matKhau').value;
+      const btn = document.getElementById('btnKiemTra');
+      const loi = document.getElementById('loiPass');
+      
+      if(!mkNhap) return;
+
+      btn.innerText = "Đang kiểm tra...";
+      btn.classList.add("loading");
+      btn.disabled = true;
+      loi.style.display = "none";
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: "kiemTraMatKhau", matKhau: mkNhap })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.trangThai === "thanhCong") {
+          // Lưu thời gian hiện tại vào localStorage
+          localStorage.setItem('phienDangNhapQuyLop', new Date().getTime().toString());
+          moKhoaForm();
+        } else {
+          loi.style.display = "block";
+          document.getElementById('matKhau').value = "";
+        }
+      })
+      .catch(err => {
+        loi.innerText = "Lỗi kết nối mạng!";
+        loi.style.display = "block";
+      })
+      .finally(() => {
+        btn.innerText = "TRUY CẬP";
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      });
+    }
+
+    // MỞ KHÓA FORM KHI PASS ĐÚNG HOẶC PHIÊN CÒN HẠN
+    function moKhoaForm() {
+      document.getElementById('khoaBaoMat').style.display = 'none';
+      document.getElementById('noiDungChinh').style.display = 'block';
+      
+      // Khởi tạo các hàm của Form
+      taiDuLieuTongKet();
+      document.getElementById('ngay').valueAsDate = new Date();
+      document.getElementById('thu').addEventListener('input', dinhDangTien);
+      document.getElementById('chi').addEventListener('input', dinhDangTien);
+    }
+
+    // Hàm lấy dữ liệu tổng kết khi vừa mở trang
+    function taiDuLieuTongKet() {
+      fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+          if(data.trangThai === "thanhCong") {
+            document.getElementById('txtTongThu').innerText = data.tongThu + " VNĐ";
+            document.getElementById('txtTongChi').innerText = data.tongChi + " VNĐ";
+            document.getElementById('txtTonDu').innerText = data.tonDu + " VNĐ";
+          } else {
+            document.getElementById('txtTonDu').innerText = "Không tải được";
+          }
+        })
+        .catch(error => {
+          console.error("Lỗi lấy số liệu:", error);
+          document.getElementById('txtTonDu').innerText = "Lỗi kết nối";
+        });
+    }
+
+    // Chạy hàm lấy số liệu ngay khi trang web tải xong
+    window.onload = taiDuLieuTongKet;
+
+    // Tự động điền ngày hôm nay
+    document.getElementById('ngay').valueAsDate = new Date();
+
+    // Định dạng tiền tệ
+    function dinhDangTien(e) {
+      let value = e.target.value.replace(/\D/g, "");
+      if (value !== "") {
+        e.target.value = parseInt(value, 10).toLocaleString('vi-VN');
+      } else {
+        e.target.value = "";
+      }
+    }
+    document.getElementById('thu').addEventListener('input', dinhDangTien);
+    document.getElementById('chi').addEventListener('input', dinhDangTien);
+
+    // Xử lý Gửi dữ liệu bằng Fetch API
+    function xuLyLuu(event) {
+      event.preventDefault();
+      
+      const btn = document.getElementById('btnLuu');
+      const thongBao = document.getElementById('thongBao');
+      
+      const soTienThu = document.getElementById('thu').value.replace(/\./g, "");
+      const soTienChi = document.getElementById('chi').value.replace(/\./g, "");
+
+      const thongTin = {
+        ngay: document.getElementById('ngay').value,
+        hoTen: document.getElementById('hoTen').value,
+        noiDung: document.getElementById('noiDung').value,
+        thu: soTienThu,
+        chi: soTienChi,
+        ghiChu: document.getElementById('ghiChu').value
+      };
+
+      // Hiển thị trạng thái đang tải
+      btn.innerHTML = "Đang xử lý...";
+      btn.classList.add("loading");
+      btn.disabled = true;
+      thongBao.style.display = "none";
+
+      // ĐÃ SỬA: Bọc thongTin vào biến action "luuDuLieu" để gửi lên Apps Script
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: "luuDuLieu", thongTin: thongTin })
+      })
+      .then(response => response.json())
+      .then(data => {
+        thongBao.style.display = "block";
+        if(data.trangThai === "thanhCong") {
+          thongBao.className = "success";
+          thongBao.innerText = data.thongBao;
+          
+          // Reset form
+          document.getElementById('quyLopForm').reset();
+          document.getElementById('ngay').valueAsDate = new Date();
+          
+          // Tải lại số dư ngay sau khi lưu thành công
+          taiDuLieuTongKet();
+        } else {
+          thongBao.className = "error";
+          thongBao.innerText = "Lỗi: " + data.thongBao;
+        }
+      })
+      .catch(error => {
+        thongBao.style.display = "block";
+        thongBao.className = "error";
+        thongBao.innerText = "Lỗi mạng hoặc máy chủ không phản hồi.";
+        console.error('Error!', error.message);
+      })
+      .finally(() => {
+        // Phục hồi nút bấm
+        setTimeout(() => {
+          thongBao.style.display = "none";
+          btn.innerHTML = "LƯU DỮ LIỆU";
+          btn.classList.remove("loading");
+          btn.disabled = false;
+        }, 3000);
+      });
+    }
+  </script>
+</body>
+</html>

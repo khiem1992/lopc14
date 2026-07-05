@@ -173,7 +173,66 @@
 
   <!-- NỘI DUNG CHÍNH (Bị ẩn) -->
   <div class="form-container" id="noiDungChinh">
-    <!-- Nút chuyển đến link công khai (Thay link công khai của bạn vào thuộc tính href) -->
+    
+    <h2>Quản Lý Quỹ Lớp</h2>
+            
+    <!-- FORM NHẬP LIỆU -->
+    <form id="quyLopForm" onsubmit="xuLyLuu(event)">
+      <div class="row">
+        <div class="form-group">
+          <label>Ngày đóng/chi</label>
+          <input type="date" id="ngay" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Họ Tên người nộp/nhận</label>
+        <input type="text" id="hoTen" placeholder="Nhập tên..." required>
+      </div>
+
+      <div class="form-group">
+        <label>Nội dung</label>
+        <input type="text" id="noiDung" placeholder="Ví dụ: Nộp quỹ, Mua phấn..." required>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>Số tiền THU (VNĐ)</label>
+          <input type="text" id="thu" inputmode="tel" placeholder="Để trống nếu là Chi">
+        </div>
+        <div class="form-group">
+          <label>Số tiền CHI (VNĐ)</label>
+          <input type="text" id="chi" inputmode="tel" placeholder="Để trống nếu là Thu">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Ghi chú (Tùy chọn)</label>
+        <input type="text" id="ghiChu" placeholder="Thông tin thêm...">
+      </div>
+
+      <button type="submit" id="btnLuu" class="btn-submit">LƯU DỮ LIỆU</button>
+      <div id="thongBao">Đang lưu dữ liệu...</div>
+    </form>
+
+    <!-- BẢNG TÓM TẮT -->
+    <div class="summary-box">
+      <div class="summary-title">📊 TỔNG KẾT QUỸ LỚP</div>
+      <div class="summary-item">
+        <span>Tổng Thu:</span>
+        <span id="txtTongThu" class="text-thu">Đang tải...</span>
+      </div>
+      <div class="summary-item">
+        <span>Tổng Chi:</span>
+        <span id="txtTongChi" class="text-chi">Đang tải...</span>
+      </div>
+      <div class="summary-item total">
+        <span>Tồn Dư:</span>
+        <span id="txtTonDu">Đang tải...</span>
+      </div>
+    </div>
+
+    <!-- Nút chuyển đến link công khai -->
     <a href="https://docs.google.com/spreadsheets/d/1NL46L5UcP8KgaHGqQ3bN-RFxlYrtzPT24-9b-oNBsA0/edit?gid=504682779#gid=504682779" target="_blank" class="btn-link">
       🔗 Xem Bảng Tính Chi Tiết
     </a>

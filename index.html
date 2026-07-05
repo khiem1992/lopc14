@@ -40,7 +40,7 @@
       font-size: 14px;
       color: #4b5563;
     }
-    input[type="text"], input[type="date"] {
+    input[type="text"], input[type="date"], input[type="password"] {
       width: 100%;
       padding: 12px;
       border: 1px solid #d1d5db;
@@ -98,6 +98,21 @@
     .text-thu { color: #16a34a; font-weight: 600;}
     .text-chi { color: #dc2626; font-weight: 600;}
     
+    /* CSS cho bảng lịch sử */
+    .history-box {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    .history-title { text-align: center; font-weight: bold; color: #475569; margin-bottom: 15px; font-size: 15px;}
+    .table-history { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+    .table-history th { background-color: #f8fafc; padding: 8px; border-bottom: 2px solid #cbd5e1; color: #475569;}
+    .table-history td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
+    .table-history .col-tien { text-align: right; font-weight: bold; }
+    .empty-msg { text-align: center; color: #94a3b8; font-style: italic; font-size: 13px; }
+
     .btn-link {
       display: block;
       width: 100%;
@@ -186,13 +201,13 @@
       </div>
 
       <div class="form-group">
-        <label>Họ Tên người nộp/nhận</label>
+        <label>Họ Tên người nộp/chi</label>
         <input type="text" id="hoTen" placeholder="Nhập tên..." required>
       </div>
 
       <div class="form-group">
         <label>Nội dung</label>
-        <input type="text" id="noiDung" placeholder="Ví dụ: Nộp quỹ, Mua phấn..." required>
+        <input type="text" id="noiDung" placeholder="Ví dụ: Nộp quỹ, Ủng hộ, Thăm hỏi, Mua quà..." required>
       </div>
 
       <div class="row">
@@ -232,6 +247,26 @@
       </div>
     </div>
 
+    <!-- BẢNG LỊCH SỬ NHẬP LIỆU (5 DÒNG CUỐI) -->
+    <div class="history-box">
+        <div class="history-title">🕒 5 KHOẢN THU CHI GẦN NHẤT</div>
+        <div style="overflow-x: auto;">
+          <table class="table-history">
+              <thead>
+                  <tr>
+                      <th>Ngày</th>
+                      <th>Họ tên</th>
+                      <th>Nội dung</th>
+                      <th style="text-align: right;">Số tiền</th>
+                  </tr>
+              </thead>
+              <tbody id="bangLichSu">
+                  <tr><td colspan="4" class="empty-msg">Đang tải dữ liệu...</td></tr>
+              </tbody>
+          </table>
+        </div>
+    </div>
+
     <!-- Nút chuyển đến link công khai -->
     <a href="https://docs.google.com/spreadsheets/d/1NL46L5UcP8KgaHGqQ3bN-RFxlYrtzPT24-9b-oNBsA0/edit?gid=504682779#gid=504682779" target="_blank" class="btn-link">
       🔗 Xem Bảng Tính Chi Tiết
@@ -242,7 +277,7 @@
     // ======================================================
     // QUAN TRỌNG: DÁN ĐƯỜNG LINK WEB APP BẠN VỪA COPY VÀO ĐÂY
     // ======================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsbfSj9cRTMrsxc889k-ycjrBh55wWn3uhef3ZgRCrXATk92yGJaZOt2H3guw6mugE/exec'; 
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby.../exec'; 
     const PHIEN_LUU_TRU = 7 * 24 * 60 * 60 * 1000; // 7 ngày tính bằng mili giây
     
     // KIỂM TRA PHIÊN ĐĂNG NHẬP KHI VỪA MỞ TRANG
@@ -323,18 +358,46 @@
             document.getElementById('txtTongThu').innerText = data.tongThu + " VNĐ";
             document.getElementById('txtTongChi').innerText = data.tongChi + " VNĐ";
             document.getElementById('txtTonDu').innerText = data.tonDu + " VNĐ";
+            
+            // Xử lý hiển thị 5 dòng cuối
+            const tbody = document.getElementById('bangLichSu');
+            tbody.innerHTML = ""; // Xóa thông báo đang tải
+            
+            if (data.namDongCuoi && data.namDongCuoi.length > 0) {
+                data.namDongCuoi.forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    // Xác định là Thu hay Chi để hiển thị màu
+                    let soTienHtml = "";
+                    if (row.thu) {
+                        soTienHtml = `<span class="text-thu">+${row.thu}</span>`;
+                    } else if (row.chi) {
+                        soTienHtml = `<span class="text-chi">-${row.chi}</span>`;
+                    }
+                    
+                    tr.innerHTML = `
+                        <td>${row.ngay}</td>
+                        <td>${row.ten}</td>
+                        <td>${row.noiDung}</td>
+                        <td class="col-tien">${soTienHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">Chưa có dữ liệu</td></tr>';
+            }
+            
           } else {
             document.getElementById('txtTonDu').innerText = "Không tải được";
+            document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="4" class="empty-msg">Lỗi tải dữ liệu</td></tr>';
           }
         })
         .catch(error => {
           console.error("Lỗi lấy số liệu:", error);
           document.getElementById('txtTonDu').innerText = "Lỗi kết nối";
+          document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="4" class="empty-msg">Lỗi kết nối</td></tr>';
         });
     }
-
-    // Chạy hàm lấy số liệu ngay khi trang web tải xong
-    window.onload = taiDuLieuTongKet;
 
     // Tự động điền ngày hôm nay
     document.getElementById('ngay').valueAsDate = new Date();
@@ -361,8 +424,19 @@
       const soTienThu = document.getElementById('thu').value.replace(/\./g, "");
       const soTienChi = document.getElementById('chi').value.replace(/\./g, "");
 
+      // CHUYỂN ĐỔI NGÀY TỪ YYYY-MM-DD SANG DD/MM/YYYY
+      const ngayGoc = document.getElementById('ngay').value;
+      let ngayDinhDang = ngayGoc;
+      if (ngayGoc) {
+        const parts = ngayGoc.split('-'); // Cắt chuỗi theo dấu trừ
+        if (parts.length === 3) {
+          // parts[0] là Năm, parts[1] là Tháng, parts[2] là Ngày
+          ngayDinhDang = `${parts[2]}/${parts[1]}/${parts[0]}`; 
+        }
+      }
+
       const thongTin = {
-        ngay: document.getElementById('ngay').value,
+        ngay: ngayDinhDang, // Sử dụng ngày đã được định dạng
         hoTen: document.getElementById('hoTen').value,
         noiDung: document.getElementById('noiDung').value,
         thu: soTienThu,
@@ -376,7 +450,6 @@
       btn.disabled = true;
       thongBao.style.display = "none";
 
-      // ĐÃ SỬA: Bọc thongTin vào biến action "luuDuLieu" để gửi lên Apps Script
       fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },

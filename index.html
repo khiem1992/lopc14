@@ -70,6 +70,20 @@
       transition: background-color 0.3s;
     }
     .btn-submit:hover { background-color: #ea580c; }
+    .btn-cancel {
+      width: 100%;
+      background-color: #64748b;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .btn-cancel:hover { background-color: #475569; }
     .loading { opacity: 0.7; cursor: not-allowed; }
     
     /* Box thông báo kết quả */
@@ -112,6 +126,17 @@
     .table-history td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
     .table-history .col-tien { text-align: right; font-weight: bold; }
     .empty-msg { text-align: center; color: #94a3b8; font-style: italic; font-size: 13px; }
+    
+    /* Nút sửa trong bảng lịch sử */
+    .btn-edit {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      transition: transform 0.2s;
+    }
+    .btn-edit:hover { transform: scale(1.2); }
 
     .btn-link {
       display: block;
@@ -180,7 +205,7 @@
   <!-- MÀN HÌNH NHẬP MẬT KHẨU -->
   <div id="khoaBaoMat">
     <h3>🔒 BẢO MẬT HỆ THỐNG</h3>
-    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập mật khẩu để truy cập bảng quỹ lớp.</p>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập mật khẩu để truy cập Form nhập liệu.</p>
     <input type="password" id="matKhau" class="input-pass" placeholder="Nhập mật khẩu..." onkeypress="if(event.key === 'Enter') xacNhanMatKhau()">
     <button class="btn-login" id="btnKiemTra" onclick="xacNhanMatKhau()">TRUY CẬP</button>
     <div id="loiPass">Sai mật khẩu. Vui lòng thử lại!</div>
@@ -201,13 +226,13 @@
       </div>
 
       <div class="form-group">
-        <label>Họ tên người nộp/chi</label>
+        <label>Họ Tên người nộp/nhận</label>
         <input type="text" id="hoTen" placeholder="Nhập tên..." required>
       </div>
 
       <div class="form-group">
         <label>Nội dung</label>
-        <input type="text" id="noiDung" placeholder="Ví dụ: Nộp quỹ, Ủng hộ, Thăm hỏi, Mua quà..." required>
+        <input type="text" id="noiDung" placeholder="Ví dụ: Nộp quỹ, Mua phấn..." required>
       </div>
 
       <div class="row">
@@ -226,7 +251,11 @@
         <input type="text" id="ghiChu" placeholder="Thông tin thêm...">
       </div>
 
-      <button type="submit" id="btnLuu" class="btn-submit">LƯU DỮ LIỆU</button>
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" id="btnLuu" class="btn-submit" style="flex: 2;">LƯU DỮ LIỆU</button>
+        <button type="button" id="btnHuy" class="btn-cancel" onclick="huySua()" style="display: none; flex: 1;">HỦY</button>
+      </div>
+      
       <div id="thongBao">Đang lưu dữ liệu...</div>
     </form>
 
@@ -249,7 +278,7 @@
 
     <!-- BẢNG LỊCH SỬ NHẬP LIỆU (5 DÒNG CUỐI) -->
     <div class="history-box">
-        <div class="history-title">🕒 5 KHOẢN THU CHI GẦN NHẤT</div>
+        <div class="history-title">🕒 LỊCH SỬ 5 GIAO DỊCH GẦN NHẤT</div>
         <div style="overflow-x: auto;">
           <table class="table-history">
               <thead>
@@ -258,46 +287,44 @@
                       <th>Họ tên</th>
                       <th>Nội dung</th>
                       <th style="text-align: right;">Số tiền</th>
+                      <th style="text-align: center;">Sửa</th>
                   </tr>
               </thead>
               <tbody id="bangLichSu">
-                  <tr><td colspan="4" class="empty-msg">Đang tải dữ liệu...</td></tr>
+                  <tr><td colspan="5" class="empty-msg">Đang tải dữ liệu...</td></tr>
               </tbody>
           </table>
         </div>
     </div>
 
     <!-- Nút chuyển đến link công khai -->
-    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRflZKNZQpwun1wM0dAJq6Yt-_yTpcmgSTZ4gja34cX4A1_yf7hYMCLVdvZzOuCXMyh6sD9cPdR834g/pubhtml" target="_blank" class="btn-link">
+    <a href="https://docs.google.com/spreadsheets/d/1NL46L5UcP8KgaHGqQ3bN-RFxlYrtzPT24-9b-oNBsA0/edit?gid=504682779#gid=504682779" target="_blank" class="btn-link">
       🔗 Xem Bảng Tính Chi Tiết
     </a>
   </div>
 
   <script>
     // ======================================================
-    // QUAN TRỌNG: DÁN ĐƯỜNG LINK WEB APP BẠN VỪA COPY VÀO ĐÂY
+    // QUAN TRỌNG: DÁN ĐƯỜNG LINK WEB APP CỦA BẠN VÀO ĐÂY
     // ======================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyh8Erd5ORSyCwMAsmSuePJn-fBAr1sDN6l4lHh8VEOM_U72zU8WPktC1y_na8-S1H0-w/exec'; 
-    const PHIEN_LUU_TRU = 7 * 24 * 60 * 60 * 1000; // 7 ngày tính bằng mili giây
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycb.../exec'; 
+    const PHIEN_LUU_TRU = 7 * 24 * 60 * 60 * 1000; 
     
-    // KIỂM TRA PHIÊN ĐĂNG NHẬP KHI VỪA MỞ TRANG
+    let dangSuaRowId = null; // Biến lưu trữ ID dòng đang được sửa
+
     window.onload = function() {
       const phien = localStorage.getItem('phienDangNhapQuyLop');
       if (phien) {
         const thoiGianLuu = parseInt(phien, 10);
         const thoiGianHienTai = new Date().getTime();
-        
-        // Nếu phiên vẫn còn hạn (nhỏ hơn 7 ngày)
         if (thoiGianHienTai - thoiGianLuu < PHIEN_LUU_TRU) {
           moKhoaForm();
         } else {
-          // Nếu quá hạn thì xóa phiên cũ
           localStorage.removeItem('phienDangNhapQuyLop');
         }
       }
     };
 
-    // HÀM KIỂM TRA MẬT KHẨU QUA API
     function xacNhanMatKhau() {
       const mkNhap = document.getElementById('matKhau').value;
       const btn = document.getElementById('btnKiemTra');
@@ -318,7 +345,6 @@
       .then(response => response.json())
       .then(data => {
         if(data.trangThai === "thanhCong") {
-          // Lưu thời gian hiện tại vào localStorage
           localStorage.setItem('phienDangNhapQuyLop', new Date().getTime().toString());
           moKhoaForm();
         } else {
@@ -337,19 +363,16 @@
       });
     }
 
-    // MỞ KHÓA FORM KHI PASS ĐÚNG HOẶC PHIÊN CÒN HẠN
     function moKhoaForm() {
       document.getElementById('khoaBaoMat').style.display = 'none';
       document.getElementById('noiDungChinh').style.display = 'block';
       
-      // Khởi tạo các hàm của Form
       taiDuLieuTongKet();
       document.getElementById('ngay').valueAsDate = new Date();
       document.getElementById('thu').addEventListener('input', dinhDangTien);
       document.getElementById('chi').addEventListener('input', dinhDangTien);
     }
 
-    // Hàm lấy dữ liệu tổng kết khi vừa mở trang
     function taiDuLieuTongKet() {
       fetch(SCRIPT_URL)
         .then(response => response.json())
@@ -359,15 +382,13 @@
             document.getElementById('txtTongChi').innerText = data.tongChi + " VNĐ";
             document.getElementById('txtTonDu').innerText = data.tonDu + " VNĐ";
             
-            // Xử lý hiển thị 5 dòng cuối
             const tbody = document.getElementById('bangLichSu');
-            tbody.innerHTML = ""; // Xóa thông báo đang tải
+            tbody.innerHTML = ""; 
             
             if (data.namDongCuoi && data.namDongCuoi.length > 0) {
                 data.namDongCuoi.forEach(row => {
                     const tr = document.createElement('tr');
                     
-                    // Xác định là Thu hay Chi để hiển thị màu
                     let soTienHtml = "";
                     if (row.thu) {
                         soTienHtml = `<span class="text-thu">+${row.thu}</span>`;
@@ -375,34 +396,87 @@
                         soTienHtml = `<span class="text-chi">-${row.chi}</span>`;
                     }
                     
+                    const rowId = row.id || ""; // Lấy ID dòng từ API
+
                     tr.innerHTML = `
                         <td>${row.ngay}</td>
                         <td>${row.ten}</td>
                         <td>${row.noiDung}</td>
                         <td class="col-tien">${soTienHtml}</td>
+                        <td style="text-align: center;">
+                           <button class="btn-edit" onclick="bamSua('${rowId}', '${row.ngay}', '${row.ten}', '${row.noiDung}', '${row.thu || ''}', '${row.chi || ''}')" title="Sửa dòng này">✏️</button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
             } else {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">Chưa có dữ liệu</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">Chưa có dữ liệu</td></tr>';
             }
-            
           } else {
             document.getElementById('txtTonDu').innerText = "Không tải được";
-            document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="4" class="empty-msg">Lỗi tải dữ liệu</td></tr>';
+            document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="5" class="empty-msg">Lỗi tải dữ liệu</td></tr>';
           }
         })
         .catch(error => {
           console.error("Lỗi lấy số liệu:", error);
           document.getElementById('txtTonDu').innerText = "Lỗi kết nối";
-          document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="4" class="empty-msg">Lỗi kết nối</td></tr>';
+          document.getElementById('bangLichSu').innerHTML = '<tr><td colspan="5" class="empty-msg">Lỗi kết nối</td></tr>';
         });
     }
 
-    // Tự động điền ngày hôm nay
+    // Hàm xử lý khi bấm nút Sửa
+    function bamSua(id, ngay, ten, noiDung, thu, chi) {
+      if(!id) {
+          alert("Bạn chưa cập nhật Code.gs nên không thể lấy được ID dòng để sửa.");
+          return;
+      }
+      // Cuộn lên form
+      document.getElementById('noiDungChinh').scrollIntoView({behavior: "smooth"});
+      
+      dangSuaRowId = id; // Lưu lại id của dòng đang sửa
+      
+      // Chuyển ngày dd/mm/yyyy ngược lại thành yyyy-mm-dd để gắn vào ô input type=date
+      let ngayDate = "";
+      if (ngay) {
+        const parts = ngay.split('/');
+        if (parts.length === 3) ngayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      
+      document.getElementById('ngay').value = ngayDate;
+      document.getElementById('hoTen').value = ten;
+      document.getElementById('noiDung').value = noiDung;
+      
+      document.getElementById('thu').value = thu;
+      document.getElementById('chi').value = chi;
+      document.getElementById('ghiChu').value = ""; // Để trống ghi chú
+      
+      // Tự động thêm dấu chấm định dạng tiền
+      dinhDangTien({target: document.getElementById('thu')});
+      dinhDangTien({target: document.getElementById('chi')});
+
+      // Đổi giao diện nút bấm
+      const btnLuu = document.getElementById('btnLuu');
+      btnLuu.innerText = "CẬP NHẬT DỮ LIỆU";
+      btnLuu.style.backgroundColor = "#2563eb"; // Đổi sang màu xanh dương
+      
+      document.getElementById('btnHuy').style.display = "inline-block"; // Hiện nút hủy
+    }
+
+    // Hàm Hủy sửa
+    function huySua() {
+      dangSuaRowId = null;
+      document.getElementById('quyLopForm').reset();
+      document.getElementById('ngay').valueAsDate = new Date();
+      
+      // Khôi phục nút bấm
+      const btnLuu = document.getElementById('btnLuu');
+      btnLuu.innerText = "LƯU DỮ LIỆU";
+      btnLuu.style.backgroundColor = "#f97316"; 
+      document.getElementById('btnHuy').style.display = "none";
+    }
+
     document.getElementById('ngay').valueAsDate = new Date();
 
-    // Định dạng tiền tệ
     function dinhDangTien(e) {
       let value = e.target.value.replace(/\D/g, "");
       if (value !== "") {
@@ -411,10 +485,7 @@
         e.target.value = "";
       }
     }
-    document.getElementById('thu').addEventListener('input', dinhDangTien);
-    document.getElementById('chi').addEventListener('input', dinhDangTien);
-
-    // Xử lý Gửi dữ liệu bằng Fetch API
+    
     function xuLyLuu(event) {
       event.preventDefault();
       
@@ -424,19 +495,17 @@
       const soTienThu = document.getElementById('thu').value.replace(/\./g, "");
       const soTienChi = document.getElementById('chi').value.replace(/\./g, "");
 
-      // CHUYỂN ĐỔI NGÀY TỪ YYYY-MM-DD SANG DD/MM/YYYY
       const ngayGoc = document.getElementById('ngay').value;
       let ngayDinhDang = ngayGoc;
       if (ngayGoc) {
-        const parts = ngayGoc.split('-'); // Cắt chuỗi theo dấu trừ
+        const parts = ngayGoc.split('-'); 
         if (parts.length === 3) {
-          // parts[0] là Năm, parts[1] là Tháng, parts[2] là Ngày
           ngayDinhDang = `${parts[2]}/${parts[1]}/${parts[0]}`; 
         }
       }
 
       const thongTin = {
-        ngay: ngayDinhDang, // Sử dụng ngày đã được định dạng
+        ngay: ngayDinhDang, 
         hoTen: document.getElementById('hoTen').value,
         noiDung: document.getElementById('noiDung').value,
         thu: soTienThu,
@@ -444,16 +513,25 @@
         ghiChu: document.getElementById('ghiChu').value
       };
 
-      // Hiển thị trạng thái đang tải
       btn.innerHTML = "Đang xử lý...";
       btn.classList.add("loading");
       btn.disabled = true;
       thongBao.style.display = "none";
 
+      // Phân biệt hành động: Nếu có dangSuaRowId thì là "suaDuLieu", ngược lại là "luuDuLieu"
+      const actionName = dangSuaRowId ? "suaDuLieu" : "luuDuLieu";
+      
+      // Đóng gói dữ liệu gửi đi
+      const payload = { 
+          action: actionName, 
+          thongTin: thongTin 
+      };
+      if (dangSuaRowId) payload.rowId = dangSuaRowId;
+
       fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: "luuDuLieu", thongTin: thongTin })
+        body: JSON.stringify(payload)
       })
       .then(response => response.json())
       .then(data => {
@@ -462,12 +540,8 @@
           thongBao.className = "success";
           thongBao.innerText = data.thongBao;
           
-          // Reset form
-          document.getElementById('quyLopForm').reset();
-          document.getElementById('ngay').valueAsDate = new Date();
-          
-          // Tải lại số dư ngay sau khi lưu thành công
-          taiDuLieuTongKet();
+          huySua(); // Khôi phục lại trạng thái form mặc định
+          taiDuLieuTongKet(); // Load lại số dư & bảng
         } else {
           thongBao.className = "error";
           thongBao.innerText = "Lỗi: " + data.thongBao;
@@ -477,13 +551,12 @@
         thongBao.style.display = "block";
         thongBao.className = "error";
         thongBao.innerText = "Lỗi mạng hoặc máy chủ không phản hồi.";
-        console.error('Error!', error.message);
+        console.error('Error!', error);
       })
       .finally(() => {
-        // Phục hồi nút bấm
         setTimeout(() => {
           thongBao.style.display = "none";
-          btn.innerHTML = "LƯU DỮ LIỆU";
+          btn.innerText = dangSuaRowId ? "CẬP NHẬT DỮ LIỆU" : "LƯU DỮ LIỆU";
           btn.classList.remove("loading");
           btn.disabled = false;
         }, 3000);
